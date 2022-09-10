@@ -4,6 +4,8 @@ import org.example.app.account.exception.AccountNotFoundException;
 import org.example.app.account.model.Account;
 import org.example.app.account.persistence.AccountRepository;
 import org.example.app.account.service.AccountsService;
+import org.example.app.account.service.KafkaMessagingServiceStub;
+import org.example.app.account.service.MessagingServiceInterface;
 import org.example.app.service.fixture.AccountRepositoryTest;
 import org.example.app.service.fixture.AccountTestHelper;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,7 +14,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -20,12 +21,14 @@ import java.util.Optional;
 
 import static java.util.Collections.singletonList;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.times;
 
 
 public class AccountServiceImprovedTest {
 
 
     @Mock private AccountRepository accountRepository;
+    @Mock private MessagingServiceInterface messagingService;
     @InjectMocks private AccountsService accountService;
 
     @BeforeEach
@@ -46,11 +49,11 @@ public class AccountServiceImprovedTest {
     }
 
     @Test
-    void whenAccountDetailsArePassed_thenReturnAccountWithNumber() {
+    void whenAccountDetailsArePassed_thenReturnAccountWithNumberStub() {
         Account account = AccountTestHelper.createTestAccount();
-        AccountRepository accountRepoTestDouble = new AccountRepositoryTest();
+        AccountRepository accountRepoTestStub = new AccountRepositoryTest();
 
-        AccountsService service = new AccountsService(accountRepoTestDouble);
+        AccountsService service = new AccountsService(accountRepoTestStub, messagingService);
         Account created_account = service.createAccount(account);
 
         assertNotNull(created_account.getNumber());
@@ -101,5 +104,29 @@ public class AccountServiceImprovedTest {
 
         assertTrue(actualMessage.startsWith(expectedMessage));
 
+    }
+
+    @Test
+    void whenValidAccountNumberIsPassed_thenVerifyMessageIsPublishedStub(){
+
+        AccountRepository accountRepoTestStub = new AccountRepositoryTest();
+        KafkaMessagingServiceStub kafkaMessagingServiceStub = new KafkaMessagingServiceStub();
+
+        AccountsService service = new AccountsService(accountRepoTestStub, kafkaMessagingServiceStub);
+        service.publishAccountDetails(101L);
+
+        String stubMessage = kafkaMessagingServiceStub.getSentMessages().get(101L);
+
+        assertTrue(stubMessage.contains("Message sent successfully"));
+    }
+
+    @Test
+    void whenValidAccountNumberIsPassed_thenVerifyMessageIsPublishedMock(){
+        Account account = AccountTestHelper.createTestAccount();
+        Mockito.when(accountRepository.findById(account.getNumber())).thenAnswer(invocationOnMock ->
+                Optional.of(account));
+        accountService.publishAccountDetails(account.getNumber());
+
+        Mockito.verify(messagingService, times(1)).publishAccountDetails(account);
     }
 }

@@ -11,6 +11,6 @@ public interface AccountsServiceInterface {
 
     List<Account> getAccounts(String customerId);
 
-    void publishUpdatedBalance(Long accountNumber, BigDecimal amountTobeUpdated);
+    void publishAccountDetails(Long accountNumber);
 
 }

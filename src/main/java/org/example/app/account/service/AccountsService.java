@@ -14,9 +14,12 @@ public class AccountsService implements AccountsServiceInterface{
 
 
     private AccountRepository accountRepository;
+    private MessagingServiceInterface messagingService;
 
-    public AccountsService(@Autowired AccountRepository accountRepository) {
+    public AccountsService(@Autowired AccountRepository accountRepository,
+                           @Autowired MessagingServiceInterface messagingService) {
         this.accountRepository = accountRepository;
+        this.messagingService = messagingService;
     }
 
 
@@ -39,14 +42,13 @@ public class AccountsService implements AccountsServiceInterface{
 
     }
 
-    public void publishUpdatedBalance(Long accountNumber, BigDecimal amountTobeUpdated){
+    public void publishAccountDetails(Long accountNumber){
 
         Optional<Account> accountOpt = accountRepository.findById(accountNumber);
-        accountOpt.map(account -> {
-            BigDecimal updatedBalance  = account.getBalance().add(amountTobeUpdated);
-            account.setBalance(updatedBalance);
-            return account;
-        }).orElseThrow(() -> new AccountNotFoundException("Unable to find account with number : " + accountNumber));
+        Account accountDetails = accountOpt.
+                orElseThrow(() -> new AccountNotFoundException("Unable to find account with number : " + accountNumber));
+
+        messagingService.publishAccountDetails(accountDetails);
     }
 
     public BigDecimal getAccountBalanceInCurrency(String accountNumber, String currencyType){

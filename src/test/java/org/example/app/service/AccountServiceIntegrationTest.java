@@ -3,8 +3,8 @@ package org.example.app.service;
 import org.example.app.account.model.Account;
 import org.example.app.account.persistence.AccountRepository;
 import org.example.app.account.service.AccountsService;
+import org.example.app.account.service.MessagingServiceInterface;
 import org.example.app.service.fixture.AccountTestHelper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -21,12 +21,14 @@ public class AccountServiceIntegrationTest {
     @Autowired
     private AccountRepository accountRepo;
 
+    @Autowired
+    private MessagingServiceInterface messagingService;
 
     @Test
     void whenAccountDetailsArePassed_thenCreateAccountWithNumber(){
         Account account = AccountTestHelper.createTestAccount();
 
-        AccountsService service = new AccountsService(accountRepo);
+        AccountsService service = new AccountsService(accountRepo, messagingService);
         Account created_account = service.createAccount(account);
 
         assertEquals(1L, created_account.getNumber());
@@ -36,7 +38,7 @@ public class AccountServiceIntegrationTest {
     void whenCustomerIdIsPassed_thenReturnListOfAccount(){
         Account account = AccountTestHelper.createTestAccount();
 
-        AccountsService service = new AccountsService(accountRepo);
+        AccountsService service = new AccountsService(accountRepo, messagingService);
         service.createAccount(account);
 
         List<Account> accounts = service.getAccounts("12345");

@@ -19,8 +19,14 @@ public class AccountRepositoryTest implements AccountRepository {
     }
 
     @Override
-    public Optional<Account> findById(Long aLong) {
+    public Optional<Account> findById(Long accountNumber) {
+        if(accountNumber == 101L){
+            Account account = AccountTestHelper.createTestAccount();
+            account.setNumber(101L);
+            return Optional.of(account);
+        }
         return Optional.empty();
+
     }
 
     @Override
