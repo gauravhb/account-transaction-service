@@ -10,12 +10,12 @@ public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(nullable = false)
-    private Long number;
+    private Long id;
     private String customerId;
     private String name;
 
     private String type;
-    private BigDecimal balance;
+    private BigDecimal balance = BigDecimal.ZERO;
 
     public String getCustomerId() {
         return customerId;
@@ -33,12 +33,12 @@ public class Account {
         this.name = name;
     }
 
-    public Long getNumber() {
-        return number;
+    public Long getId() {
+        return id;
     }
 
-    public void setNumber(Long number) {
-        this.number = number;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getType() {

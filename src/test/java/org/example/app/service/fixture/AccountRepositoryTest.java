@@ -9,9 +9,11 @@ import java.util.Optional;
 public class AccountRepositoryTest implements AccountRepository {
     @Override
     public Account save(Account entity) {
-        entity.setNumber(101L);
+        entity.setId(101L);
         return entity;
     }
+
+
 
     @Override
     public <S extends Account> Iterable<S> saveAll(Iterable<S> entities) {
@@ -22,7 +24,7 @@ public class AccountRepositoryTest implements AccountRepository {
     public Optional<Account> findById(Long accountNumber) {
         if(accountNumber == 101L){
             Account account = AccountTestHelper.createTestAccount();
-            account.setNumber(101L);
+            account.setId(101L);
             return Optional.of(account);
         }
         return Optional.empty();
@@ -78,4 +80,9 @@ public class AccountRepositoryTest implements AccountRepository {
     public List<Account> findByCustomerId(String customerId) {
         return null;
     }
+
+    /*@Override
+    public Optional<Account> findByNumber(Long accountNumber) {
+        return Optional.empty();
+    }*/
 }

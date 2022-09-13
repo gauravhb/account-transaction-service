@@ -13,4 +13,9 @@ public interface AccountsServiceInterface {
 
     void publishAccountDetails(Long accountNumber);
 
+    public Account createAccount(Account account);
+
+    BigDecimal getAccountBalance(Long accountNumber);
+
+    BigDecimal getAccountBalanceInCurrency(Long accountNumber);
 }

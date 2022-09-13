@@ -12,7 +12,7 @@ public class AccountTestHelper {
         account.setName("EURO Cash Account");
         account.setType("Cash_Account");
         account.setBalance(new BigDecimal("150000"));
-        account.setNumber(123L);
+        account.setId(123L);
         return account;
     }
 }
