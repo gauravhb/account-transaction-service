@@ -1,7 +1,6 @@
 package org.example.app.account.webclient;
 
-import org.example.app.account.dto.ExchangeConversionResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.example.app.account.dto.ForexServiceResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
@@ -13,15 +12,14 @@ public class ExchangeServiceImpl implements ExchangeService {
 
     private static final String FOREX_SERVICE_BASE_URL = "http://localhost:8082/forex/";
 
-    private static final String FOREX_ENDPOINT = "from/{from}/to/{to}/amount/{amount}";
+    private static final String FOREX_ENDPOINT = "from/{from}/to/{to}";
 
-    @Autowired
-    RestTemplate restTemplate;
 
+    private RestTemplate restTemplate = new RestTemplate();
 
 
     @Override
-    public ExchangeConversionResponse convertBalance(BigDecimal amount, String inputCurrency, String targetCurrency) {
+    public BigDecimal convertBalance(BigDecimal amount, String inputCurrency, String targetCurrency) {
 
         Map<String, String> pathParams = new HashMap<>();
         pathParams.put("from", inputCurrency);
@@ -29,10 +27,20 @@ public class ExchangeServiceImpl implements ExchangeService {
         pathParams.put("amount", amount.toPlainString());
 
 
-        ResponseEntity<ExchangeConversionResponse> response = restTemplate
-                .getForEntity(FOREX_SERVICE_BASE_URL + FOREX_ENDPOINT, ExchangeConversionResponse.class, pathParams);
+        ResponseEntity<ForexServiceResponse> response = restTemplate
+                .getForEntity(FOREX_SERVICE_BASE_URL + FOREX_ENDPOINT, ForexServiceResponse.class, pathParams);
 
-        return response.getBody();
+        if (response.getStatusCode().is2xxSuccessful()) {
+            ForexServiceResponse forexServiceResponse = response.getBody();
+            if (forexServiceResponse != null && forexServiceResponse.getExchangeRate() != null) {
+                return amount.multiply(forexServiceResponse.getExchangeRate());
+            } else {
+                throw new RuntimeException("Unable to get exchange rate from remote service");
+            }
+        } else {
+            throw new RuntimeException("Error invoking Forex Service : " + response.getStatusCodeValue());
+        }
+
 
     }
 }

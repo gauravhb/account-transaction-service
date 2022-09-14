@@ -1,6 +1,6 @@
 package org.example.app.account.service;
 
-import org.example.app.account.dto.ExchangeConversionResponse;
+import org.example.app.account.dto.ForexServiceResponse;
 import org.example.app.account.exception.AccountNotFoundException;
 import org.example.app.account.model.Account;
 import org.example.app.account.persistence.AccountRepository;
@@ -59,15 +59,11 @@ public class AccountsService implements AccountsServiceInterface{
 
     public BigDecimal getAccountBalanceInCurrency(Long accountNumber){
 
-        //Validate CurrencyType with one given in account entity
-        //Get Exchange Rate from Remote Webservice
-        //Apply conversion and return
 
         BigDecimal convertedAmount = accountRepository.findById(accountNumber)
-                .map(account -> {
-                    ExchangeConversionResponse response = exchangeService.convertBalance(account.getBalance(), "USD", "EUR");
-                    return response.getConvertedAmount();
-                }).orElseThrow(() -> new RuntimeException("Unable to get converted balance for accountNumber : " + accountNumber));
+                .map(account ->
+                        exchangeService.convertBalance(account.getBalance(), "USD", "EUR"))
+                .orElseThrow(() -> new RuntimeException("Unable to get converted balance for accountNumber : " + accountNumber));
 
         return convertedAmount;
     }
