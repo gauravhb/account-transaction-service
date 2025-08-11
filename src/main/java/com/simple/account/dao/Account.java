@@ -1,5 +1,7 @@
 package com.simple.account.dao;
 
+import java.math.BigDecimal;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -11,22 +13,31 @@ import lombok.Data;
 public class Account {
 	 @Id
 	    @GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long cid;
-	private String cname;
+	private long accountId;
+	private String customerName;
 	private String accountnumber;
 	private String currency;
-	private Double balance;
-	public long getCid() {
-		return cid;
+	private BigDecimal  balance;
+	
+	public Account(long accountId, String customerName, String accountnumber, String currency, BigDecimal balance) {
+		
+		this.accountId = accountId;
+		this.customerName = customerName;
+		this.accountnumber = accountnumber;
+		this.currency = currency;
+		this.balance = balance;
 	}
-	public void setCid(long cid) {
-		this.cid = cid;
+	public long getAccountId() {
+		return accountId;
 	}
-	public String getCname() {
-		return cname;
+	public void setAccountId(long accountId) {
+		this.accountId = accountId;
 	}
-	public void setCname(String cname) {
-		this.cname = cname;
+	public String getCustomerName() {
+		return customerName;
+	}
+	public void setCustomerName(String customerName) {
+		this.customerName = customerName;
 	}
 	public String getAccountnumber() {
 		return accountnumber;
@@ -40,18 +51,16 @@ public class Account {
 	public void setCurrency(String currency) {
 		this.currency = currency;
 	}
-	public Double getBalance() {
+	public BigDecimal getBalance() {
 		return balance;
 	}
-	public void setBalance(Double balance) {
+	public void setBalance(BigDecimal balance) {
 		this.balance = balance;
 	}
-	@Override
-	public String toString() {
-		return "Account [cid=" + cid + ", cname=" + cname + ", accountnumber=" + accountnumber + ", currency="
-				+ currency + ", balance=" + balance + "]";
-	}
 	
 	
+	   
+	   
+
 
 }
