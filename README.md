@@ -14,7 +14,7 @@
   "type": "savings",
   "balance": "1230"
 }
-
+```
 
 #### Sample Response Body
 ```json
@@ -26,5 +26,16 @@
   "type": "savings",
   "balance": 1230
 }
+```
 
+### 2. Get Balance
 
+**GET** `http://localhost:8080/account/balance/1`
+
+#### Sample Response Body
+```json
+{
+    "accountNumber": 1,
+    "accountBalance": 1230.00
+}
+```
